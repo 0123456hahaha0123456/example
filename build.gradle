@@ -5,9 +5,13 @@ plugins {
     id 'signing'
 }
 
+sourceCompatibility = 11
+targetCompatibility = 11
+
+
 group 'duc.gradle'
-version '1.0.1'
-archivesBaseName = 'test'
+version '1.0-SNAPSHOT'
+archivesBaseName = 'example'
 
 repositories {
     mavenCentral()
@@ -30,7 +34,7 @@ java {
 publishing {
     publications {
         mavenJava(MavenPublication) {
-            artifactId = 'test'
+            artifactId = 'example'
             from components.java
             versionMapping {
                 usage('java-api') {
