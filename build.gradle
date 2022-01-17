@@ -2,11 +2,13 @@ plugins {
     id 'java'
     id 'java-library'
     id 'maven-publish'
+    id 'signing'
+
 }
 
 group 'duc.gradle'
 version '1.0-SNAPSHOT'
-//apply plugins: 'maven-publish'
+archivesBaseName = 'test'
 
 repositories {
     mavenCentral()
@@ -21,29 +23,93 @@ test {
     useJUnitPlatform()
 }
 
+java {
+    withJavadocJar()
+    withSourcesJar()
+}
+
 publishing {
     publications {
-        maven(MavenPublication) {
-            groupId = 'duc.gradle'
+        mavenJava(MavenPublication) {
             artifactId = 'test'
-            version = '1.0-SNAPSHOT'
-
             from components.java
+            versionMapping {
+                usage('java-api') {
+                    fromResolutionOf('runtimeClasspath')
+                }
+                usage('java-runtime') {
+                    fromResolutionResult()
+                }
+            }
+            pom {
+                name = 'My example'
+                description = 'A example of publishing maven central'
+                url = 'https://github.com/0123456hahaha0123456/example'
+
+                licenses {
+                    license {
+                        name = 'The Apache License, Version 2.0'
+                        url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                    }
+                }
+
+                developers {
+                    developer {
+                        id = 'duc.trantrung'
+                        name = 'Duc Tran'
+                        email = 'ductran.tpc@gmail.com'
+                    }
+                }
+                scm {
+                    connection = 'scm:git:git://github.com/0123456hahaha0123456/example.git'
+                    developerConnection = 'scm:git:ssh://git@github.com/0123456hahaha0123456/example.git'
+                    url = 'https://github.com/0123456hahaha0123456/example'
+                }
+            }
         }
     }
+//    repositories {
+//        mavenDeployer {
+////            beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+//
+//            repository(url: "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/") {
+//                authentication(userName: project.property("nexusUsername"), password: project.property("nexusPassword"))
+//            }
+//
+//            snapshotRepository(url: "https://s01.oss.sonatype.org/content/repositories/snapshots/") {
+//                authentication(userName: project.property("nexusUsername"), password: project.property("nexusPassword"))
+//            }
+////        url "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
+////        credentials {
+////            username = project.property("nexusUsername")
+////            password = project.property("nexusPassword")
+////        }
+////
+////
+////        url "https://s01.oss.sonatype.org/content/repositories/snapshots/"
+////        credentials {
+////            username = project.property("nexusUsername")
+////            password = project.property("nexusPassword")
+////        }
+//
+//
+//            maven {
+//                def releasesRepoUrl = "$buildDir/repos/releases"
+//                def snapshotsRepoUrl = "$buildDir/repos/snapshots"
+////            def releasesRepoUrl = layout.buildDirectory.dir('repos/release')
+////            def snapshotsRepoUrl = layout.buildDirectory.dir('repos /snapshot')
+//                url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
+//            }
+//        }
+//    }
+}
 
-    developers {
-        developer {
-            id = 'duct'
-            name = 'Duc Tran'
-            email = 'ductran.tpc@gmail.com'
-        }
-    }
+signing {
+    sign publishing.publications.mavenJava
+}
 
-    repositories {
-        maven {
-            name = 'myRepo'
-            url = layout.buildDirectory.dir("repo")
-        }
+javadoc {
+    if(JavaVersion.current().isJava8Compatible()) {
+        options.addBooleanOption('html5', true)
     }
 }
