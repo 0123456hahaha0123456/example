@@ -3,7 +3,6 @@ plugins {
     id 'java-library'
     id 'maven-publish'
     id 'signing'
-
 }
 
 group 'duc.gradle'
@@ -68,6 +67,18 @@ publishing {
             }
         }
     }
+
+    repositories {
+        maven{
+            def repositoryUrl= 'https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/'
+            def snapshotsRepoUrl= 'https://s01.oss.sonatype.org/content/repositories/snapshots/'
+            url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
+            credentials {
+                username = project.property("nexusUsername")
+                password = project.property("nexusPassword")
+            }
+        }
+    }
 //    repositories {
 //        mavenDeployer {
 ////            beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
@@ -105,11 +116,12 @@ publishing {
 }
 
 signing {
+//    useGpgCmd()
     sign publishing.publications.mavenJava
 }
 
 javadoc {
-    if(JavaVersion.current().isJava8Compatible()) {
+    if(JavaVersion.current().isJava11Compatible()) {
         options.addBooleanOption('html5', true)
     }
 }
