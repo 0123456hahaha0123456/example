@@ -1,3 +1,5 @@
+package duc;
+
 public class Person {
 
     private String name;
